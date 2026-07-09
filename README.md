@@ -17,6 +17,12 @@ re-discovering later.
 | -------------------- | -------------------------- | ------------------------------------------------------------------- |
 | `pw-cracker`         | Python (stdlib + `bcrypt`) | Offline hash cracker vs. rockyou: md5/sha1/sha256/sha512 (unsalted + simple-salted), bcrypt, and Django `pbkdf2_sha256`. |
 | `dehashed`           | Python (`requests`, `python-dotenv`) | DeHashed Search API v2 client: search breach data by email/domain/username/etc. and save JSON + CSV to disk. |
+| `email-forge`        | Python (stdlib)            | Name + domain → candidate email addresses (common corporate/personal schemes). |
+| `wordlist-forge`     | Python (stdlib)            | Seed passwords/names/dates → mutated password wordlist (case, leet, suffixes) for `pw-cracker` / hashcat. |
+| `gravatar`           | Python (stdlib + `requests`) | Email → Gravatar avatar URL + public profile (name, location, linked accounts). |
+| `phone-intel`        | Python (`phonenumbers`)    | Phone → validity, region, carrier, line type, timezones. Offline. |
+| `ip-intel`           | Python (`requests`)        | IP → geolocation + ASN via ip-api.com (free, no key). |
+| `dossier`            | Python (`networkx`)        | An `/investigate` case file → report + relationship graph (GraphML) + timeline. |
 | `scrapers/instagram` | Chrome extension (JS, MV3) | Scrapes a target Instagram profile's followers and following (handle, name, profile pic). |
 | `scrapers/facebook`  | Chrome extension (JS, MV3) | Walks a Facebook profile's photo lightbox, scraping image, caption, location, poster, date, and comments per photo. |
 | `spiderfoot`         | Python (own pinned deps)   | Vendored SpiderFoot 4.0: 200+ modules, CLI-only (web UI stripped). Kept isolated because of its old dependency pins. |
@@ -30,7 +36,7 @@ Requires Python 3.11+ and [Poetry](https://python-poetry.org/).
 
 ```bash
 cd osint-suite
-poetry install          # one venv for the Python tools we own (bcrypt, requests, python-dotenv)
+poetry install          # one venv for the Python tools we own (bcrypt, requests, python-dotenv, phonenumbers, networkx)
 ```
 
 For `dehashed`, add your API key (never committed):
@@ -92,6 +98,20 @@ cd spiderfoot
 python sf.py -M                                    # list available modules
 python sf.py -s example.com -u footprint -o csv    # scan by use-case, CSV to stdout
 python sf.py -s example.com -m sfp_dnsresolve,sfp_whois -o json
+```
+
+### recon helpers (email-forge, wordlist-forge, gravatar, phone-intel, ip-intel, dossier)
+Small single-purpose tools in the shared env. Each takes `--selftest` (offline
+self-check) and has its own `README.md`. All free; `gravatar --fetch` and
+`ip-intel` are the only ones that touch the network.
+
+```bash
+poetry run python email-forge/forge.py    --name "John Doe" --domain example.com
+poetry run python wordlist-forge/forge.py fluffy summer --suffix 0804 -o wl.txt
+poetry run python gravatar/gravatar.py    --email foo@bar.com --fetch
+poetry run python phone-intel/phone.py    --number "+14155552671"
+poetry run python ip-intel/ip.py          --ip 8.8.8.8
+poetry run python dossier/dossier.py      --case investigations/jane.json --out investigations/jane_dossier
 ```
 
 ## Disclaimers

@@ -19,6 +19,8 @@ python-dotenv = "^1.0"
 # NOTE: SpiderFoot is deliberately NOT listed here. It pins ~25 old dependencies
 # (cryptography<4, pyOpenSSL<22, PyPDF2<2, networkx<2.7, ...) that would drag the
 # whole shared env backwards. Run it from its own env or Docker. See CLAUDE.md.
+phonenumbers = "^9.0.34"
+networkx = "<3.6"
 
 [build-system]
 requires = ["poetry-core"]

@@ -23,23 +23,36 @@ osint-suite/
 ├── dehashed/            # Python  – DeHashed v2 breach-search API client
 │   ├── dehashed.py
 │   └── README.md
+├── email-forge/         # Python  – name + domain → candidate emails (stdlib)
+├── wordlist-forge/      # Python  – seeds → mutated password wordlist (stdlib)
+├── gravatar/            # Python  – email → avatar + public profile
+├── phone-intel/         # Python  – phone → carrier / region / line-type
+├── ip-intel/            # Python  – IP → geo + ASN (ip-api.com)
+├── dossier/             # Python  – case file → report + graph + timeline
 └── spiderfoot/          # Python  – full OSINT automation suite (vendored 3rd-party)
 ```
 
 ## What's Python and what isn't (read this before the Poetry section)
 
-Three of the five are Python, and they do NOT all share dependencies:
+Most are Python, and they do NOT all share dependencies:
 
 | Module               | Stack                    | Runs via                          |
 | -------------------- | ------------------------ | --------------------------------- |
 | `pw-cracker`         | Python (stdlib + bcrypt) | the shared Poetry env below       |
 | `dehashed`           | Python (requests+dotenv) | the shared Poetry env below       |
+| `email-forge`        | Python (stdlib)          | the shared Poetry env below       |
+| `wordlist-forge`     | Python (stdlib)          | the shared Poetry env below       |
+| `gravatar`           | Python (stdlib+requests) | the shared Poetry env below       |
+| `phone-intel`        | Python (phonenumbers)    | the shared Poetry env below       |
+| `ip-intel`           | Python (requests)        | the shared Poetry env below       |
+| `dossier`            | Python (networkx)        | the shared Poetry env below       |
 | `scrapers/instagram` | JS Chrome extension      | loaded unpacked in Chrome         |
 | `scrapers/facebook`  | JS Chrome extension      | loaded unpacked in Chrome         |
 | `spiderfoot`         | Python, own pinned deps  | its own isolated venv (see below) |
 
-So the "shared environment" is real but small: it owns `pw-cracker` and
-`dehashed`. The extensions have no Python. SpiderFoot ships ~25 old pinned dependencies
+So the "shared environment" owns `pw-cracker`, `dehashed`, and the recon helpers
+(`email-forge`, `wordlist-forge`, `gravatar`, `phone-intel`, `ip-intel`,
+`dossier`). The extensions have no Python. SpiderFoot ships ~25 old pinned dependencies
 (`cryptography<4`, `pyOpenSSL<22`, `PyPDF2<2`, `networkx<2.7`, ...) plus its own
 `requirements.txt` and `.git`; merging those into the shared env would drag
 everything backwards, so it stays isolated on purpose.
@@ -51,7 +64,7 @@ just manages the env; nothing is built or installed as a package.
 
 ```bash
 cd C:\My_Files\my_programs\osint-suite
-poetry install                 # creates the venv, installs deps (bcrypt, requests, python-dotenv)
+poetry install                 # creates the venv, installs deps (bcrypt, requests, python-dotenv, phonenumbers, networkx)
 poetry run python pw-cracker/crack.py <hash>
 ```
 
@@ -97,6 +110,23 @@ and save JSON + CSV to `dehashed/results/`. API key lives in `dehashed/.env`
 poetry run python dehashed/dehashed.py --type email --value foo@bar.com
 poetry run python dehashed/dehashed.py --selftest      # offline mock, no credits
 ```
+
+### recon helpers  (Python, shared env)
+Six small single-purpose tools, each with its own `README.md` and a `--selftest`
+offline self-check. All free; only `gravatar --fetch` and `ip-intel` hit the
+network.
+
+```bash
+poetry run python email-forge/forge.py    --name "John Doe" --domain example.com  # name+domain → candidate emails
+poetry run python wordlist-forge/forge.py fluffy summer --suffix 0804 -o wl.txt    # seeds → mutated wordlist
+poetry run python gravatar/gravatar.py    --email foo@bar.com --fetch              # email → avatar + profile
+poetry run python phone-intel/phone.py    --number "+14155552671"                 # phone → carrier/region/type
+poetry run python ip-intel/ip.py          --ip 8.8.8.8                            # IP → geo + ASN
+poetry run python dossier/dossier.py      --case investigations/x.json --out investigations/x_dossier  # case → report+graph+timeline
+```
+
+`dossier` consumes a JSON case file (`{"target", "facts":[{type,value,source,confidence,date}]}`)
+and writes `report.md`, `timeline.md`, `graph.graphml`. See `dossier/README.md`.
 
 ### spiderfoot  (Python, isolated)
 Vendored SpiderFoot 4.0: 200+ modules, CLI-only (web UI stripped out). Do NOT install it into the
