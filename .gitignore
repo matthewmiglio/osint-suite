@@ -7,6 +7,11 @@ __pycache__/
 pw-cracker/*.txt
 pw-cracker/*.csv
 
+# wordlist-forge: generated password wordlists are sensitive (same as pw-cracker data)
+wordlist-forge/*.txt
+wordlist-forge/*.csv
+wl.txt
+
 # SpiderFoot runtime artifacts
 spiderfoot/*.db
 spiderfoot/log/
@@ -15,6 +20,9 @@ spiderfoot/log/
 .env
 **/.env
 dehashed/results/
+
+# investigate: case files, reports, dossiers, scan logs — personal/target data
+investigations/
 
 # Local Claude Code dir is ignored, EXCEPT the shared skills folder.
 .claude/*
