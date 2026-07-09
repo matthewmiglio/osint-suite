@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+.venv/
+
+# pw-cracker: local wordlists, target hashes, and CRACKED OUTPUT are sensitive
+# and/or huge (rockyou is ~130 MB). Keep them local, never commit.
+pw-cracker/*.txt
+pw-cracker/*.csv
+
+# SpiderFoot runtime artifacts
+spiderfoot/*.db
+spiderfoot/log/
+
+# dehashed: API key(s) and pulled breach data — never commit
+.env
+**/.env
+dehashed/results/
+
+# Local Claude Code dir is ignored, EXCEPT the shared skills folder.
+.claude/*
+!.claude/skills/

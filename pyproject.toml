@@ -1,0 +1,25 @@
+[tool.poetry]
+# Shared top-level environment for the OSINT suite.
+# package-mode = false means Poetry manages ONE virtualenv for the whole repo
+# but builds nothing installable: modules are run as scripts, not imported as a package.
+name = "osint-suite"
+version = "0.1.0"
+description = "Personal OSINT / recon monorepo: hash cracking, social scrapers, and SpiderFoot."
+authors = ["matt <matmigg0804@gmail.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+# pw-cracker only needs the stdlib EXCEPT for bcrypt-hash cracking, which uses this.
+bcrypt = "^4.1"
+# dehashed module (DeHashed v2 API client):
+requests = "^2.31"
+python-dotenv = "^1.0"
+
+# NOTE: SpiderFoot is deliberately NOT listed here. It pins ~25 old dependencies
+# (cryptography<4, pyOpenSSL<22, PyPDF2<2, networkx<2.7, ...) that would drag the
+# whole shared env backwards. Run it from its own env or Docker. See CLAUDE.md.
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
