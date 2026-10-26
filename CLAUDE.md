@@ -63,7 +63,7 @@ One virtualenv for the Python tools we own. `package-mode = false`, so Poetry
 just manages the env; nothing is built or installed as a package.
 
 ```bash
-cd C:\My_Files\my_programs\osint-suite
+cd M:\my_files\my_programs\osint-suite
 poetry install                 # creates the venv, installs deps (bcrypt, requests, python-dotenv, phonenumbers, networkx)
 poetry run python pw-cracker/crack.py <hash>
 ```

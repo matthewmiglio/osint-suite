@@ -5,7 +5,7 @@ Walks a Facebook photo album / profile photos lightbox, scraping each photo's im
 ## Install (unpacked)
 1. Chrome → `chrome://extensions`
 2. Enable **Developer mode** (top right).
-3. **Load unpacked** → select `C:\My_Files\my_programs\fb-post-scraper\`.
+3. **Load unpacked** → select this folder (`osint-suite/scrapers/facebook/`).
 4. Pin the extension (puzzle icon → pin).
 
 ## Use
