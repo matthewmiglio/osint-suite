@@ -1,7 +1,7 @@
 # osint-suite
 
-A personal OSINT / recon monorepo. Five independent tools that used to be
-separate repos, folded together for one place to find and run them.
+A personal OSINT / recon monorepo of independent tools that used to be separate
+repos, folded together for one place to find and run them.
 
 > Authorized use only: your own accounts, consenting targets, CTFs, or
 > engagements you have permission to run. Scraping and password cracking against
@@ -29,6 +29,12 @@ osint-suite/
 ├── phone-intel/         # Python  – phone → carrier / region / line-type
 ├── ip-intel/            # Python  – IP → geo + ASN (ip-api.com)
 ├── dossier/             # Python  – case file → report + graph + timeline
+├── username-enum/       # Python  – username → which sites have that account
+├── gh-user/             # Python  – GitHub username → profile + leaked commit emails
+├── email-accounts/      # Python  – email → sites it's registered on (wraps holehe)
+├── domain-intel/        # Python  – domain → RDAP + crt.sh subdomains + A records
+├── exif/                # Python  – image → EXIF GPS / camera / timestamps (Pillow)
+├── reverse-image/       # Python  – image → reverse-image matches (Playwright/Yandex)
 └── spiderfoot/          # Python  – full OSINT automation suite (vendored 3rd-party)
 ```
 
@@ -46,13 +52,21 @@ Most are Python, and they do NOT all share dependencies:
 | `phone-intel`        | Python (phonenumbers)    | the shared Poetry env below       |
 | `ip-intel`           | Python (requests)        | the shared Poetry env below       |
 | `dossier`            | Python (networkx)        | the shared Poetry env below       |
+| `username-enum`      | Python (requests)        | the shared Poetry env below       |
+| `gh-user`            | Python (requests)        | the shared Poetry env below       |
+| `email-accounts`     | Python (wraps `holehe`)  | the shared Poetry env below       |
+| `domain-intel`       | Python (requests)        | the shared Poetry env below       |
+| `exif`               | Python (Pillow)          | the shared Poetry env below       |
+| `reverse-image`      | Python (Playwright)      | the shared Poetry env below (+ `playwright install chromium`) |
 | `scrapers/instagram` | JS Chrome extension      | loaded unpacked in Chrome         |
 | `scrapers/facebook`  | JS Chrome extension      | loaded unpacked in Chrome         |
 | `spiderfoot`         | Python, own pinned deps  | its own isolated venv (see below) |
 
-So the "shared environment" owns `pw-cracker`, `dehashed`, and the recon helpers
+So the "shared environment" owns `pw-cracker`, `dehashed`, the recon helpers
 (`email-forge`, `wordlist-forge`, `gravatar`, `phone-intel`, `ip-intel`,
-`dossier`). The extensions have no Python. SpiderFoot ships ~25 old pinned dependencies
+`dossier`), the identity/infra pivots (`username-enum`, `gh-user`,
+`email-accounts`, `domain-intel`, `exif`), and `reverse-image` (needs a one-time
+`poetry run playwright install chromium`). The extensions have no Python. SpiderFoot ships ~25 old pinned dependencies
 (`cryptography<4`, `pyOpenSSL<22`, `PyPDF2<2`, `networkx<2.7`, ...) plus its own
 `requirements.txt` and `.git`; merging those into the shared env would drag
 everything backwards, so it stays isolated on purpose.
@@ -64,7 +78,7 @@ just manages the env; nothing is built or installed as a package.
 
 ```bash
 cd M:\my_files\my_programs\osint-suite
-poetry install                 # creates the venv, installs deps (bcrypt, requests, python-dotenv, phonenumbers, networkx)
+poetry install                 # creates the venv, installs deps (bcrypt, requests, python-dotenv, phonenumbers, networkx, pillow, holehe, playwright)
 poetry run python pw-cracker/crack.py <hash>
 ```
 
@@ -127,6 +141,20 @@ poetry run python dossier/dossier.py      --case investigations/x.json --out inv
 
 `dossier` consumes a JSON case file (`{"target", "facts":[{type,value,source,confidence,date}]}`)
 and writes `report.md`, `timeline.md`, `graph.graphml`. See `dossier/README.md`.
+
+### identity & infra pivots  (Python, shared env)
+Five more single-purpose tools, each with its own `README.md` and a `--selftest`
+offline check. All free. Every one hits the network except on `--selftest`;
+`exif` needs Pillow and `email-accounts` wraps `holehe` (both pulled by `poetry
+install`). Live-tested 2026-11.
+
+```bash
+poetry run python username-enum/username_enum.py <handle>      # username → accounts across 13 vetted sites
+poetry run python gh-user/gh.py <github-user>                  # GitHub user → profile + commit-author emails
+poetry run python email-accounts/accounts.py <email>           # email → sites it's registered on (wraps holehe)
+poetry run python domain-intel/domain.py <domain>              # domain → RDAP + crt.sh subdomains + A records
+poetry run python exif/exif_read.py <image...>                 # image → EXIF GPS / camera / timestamps
+```
 
 ### spiderfoot  (Python, isolated)
 Vendored SpiderFoot 4.0: 200+ modules, CLI-only (web UI stripped out). Do NOT install it into the

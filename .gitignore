@@ -24,6 +24,13 @@ dehashed/results/
 # investigate: case files, reports, dossiers, scan logs — personal/target data
 investigations/
 
+# reverse-image: result screenshots + scraped JSON are target data, never commit
+reverse-image/_result.*
+reverse-image/*.png
+reverse-image/*.jpg
+reverse-image/*.webp
+reverse-image/*.json
+
 # Local Claude Code dir is ignored, EXCEPT the shared skills folder.
 .claude/*
 !.claude/skills/

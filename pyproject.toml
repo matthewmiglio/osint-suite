@@ -21,6 +21,9 @@ python-dotenv = "^1.0"
 # whole shared env backwards. Run it from its own env or Docker. See CLAUDE.md.
 phonenumbers = "^9.0.34"
 networkx = "<3.6"
+playwright = "^1.64.1"
+pillow = "^13.0.0"
+holehe = "^1.61"
 
 [build-system]
 requires = ["poetry-core"]
